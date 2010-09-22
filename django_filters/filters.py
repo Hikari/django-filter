@@ -156,13 +156,10 @@ class DateRangeFilter(ChoiceFilter):
         super(DateRangeFilter, self).__init__(*args, **kwargs)
 
     def filter(self, qs, value):
-        import logging
         try:
             value = int(value)
         except (ValueError, TypeError):
             value = ''
-        logging.debug(self.options[value][1](qs, self.name))
-        logging.debug(self.name)
         return self.options[value][1](qs, self.name)
 
 class AllValuesFilter(ChoiceFilter):
