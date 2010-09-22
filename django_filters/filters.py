@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 from django import forms
 from django.db.models import Q
@@ -123,7 +124,7 @@ class RangeFilter(Filter):
 
 class DateRangeFilter(ChoiceFilter):
     options = {
-        '': (_('Any Date'), lambda qs, name: qs.all()),
+        '': (_('------'), lambda qs, name: qs.all()),
         1: (_('Today'), lambda qs, name: qs.filter(**{
             '%s__year' % name: datetime.today().year,
             '%s__month' % name: datetime.today().month,
@@ -133,11 +134,19 @@ class DateRangeFilter(ChoiceFilter):
             '%s__gte' % name: (datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d'),
             '%s__lt' % name: (datetime.today()+timedelta(days=1)).strftime('%Y-%m-%d'),
         })),
-        3: (_('This month'), lambda qs, name: qs.filter(**{
-            '%s__year' % name: datetime.today().year,
-            '%s__month' % name: datetime.today().month
+        3: (_('Past 14 days'), lambda qs, name: qs.filter(**{
+            '%s__gte' % name: (datetime.today() - timedelta(days=14)).strftime('%Y-%m-%d'),
+            '%s__lt' % name: (datetime.today()+timedelta(days=7)).strftime('%Y-%m-%d'),
         })),
-        4: (_('This year'), lambda qs, name: qs.filter(**{
+        4: (_('This month'), lambda qs, name: qs.filter(**{
+            '%s__year' % name: datetime.today().year,
+            '%s__month' % name: datetime.today().month,
+        })),
+        5: (_('Last month'), lambda qs, name:  qs.filter(**{
+            '%s__year' % name: datetime.today().year,
+            '%s__month' % name: (datetime.today() - relativedelta(months=2)).month,
+        })),
+        6: (_('This year'), lambda qs, name: qs.filter(**{
             '%s__year' % name: datetime.today().year,
         })),
     }
@@ -147,10 +156,13 @@ class DateRangeFilter(ChoiceFilter):
         super(DateRangeFilter, self).__init__(*args, **kwargs)
 
     def filter(self, qs, value):
+        import logging
         try:
             value = int(value)
         except (ValueError, TypeError):
             value = ''
+        logging.debug(self.options[value][1](qs, self.name))
+        logging.debug(self.name)
         return self.options[value][1](qs, self.name)
 
 class AllValuesFilter(ChoiceFilter):
