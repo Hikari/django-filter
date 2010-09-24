@@ -138,11 +138,11 @@ class DateRangeFilter(ChoiceFilter):
             '%s__gte' % name: (datetime.today() - timedelta(days=14)).strftime('%Y-%m-%d'),
             '%s__lt' % name: (datetime.today()+timedelta(days=7)).strftime('%Y-%m-%d'),
         })),
-        4: (_('This month'), lambda qs, name: qs.filter(**{
+        4: (_('This month - %s' % datetime.today().strftime('%B')), lambda qs, name: qs.filter(**{
             '%s__year' % name: datetime.today().year,
             '%s__month' % name: datetime.today().month,
         })),
-        5: (_('Last month'), lambda qs, name:  qs.filter(**{
+        5: (_('Last month - %s' % (datetime.today() - relativedelta(months=2)).strftime('%B')), lambda qs, name:  qs.filter(**{
             '%s__year' % name: datetime.today().year,
             '%s__month' % name: (datetime.today() - relativedelta(months=2)).month,
         })),

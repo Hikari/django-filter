@@ -8,6 +8,8 @@ from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
+from django.contrib.admin import widgets as adminwidgets
+
 class LinkWidget(forms.Widget):
     def __init__(self, attrs=None, choices=()):
         super(LinkWidget, self).__init__(attrs)
@@ -66,6 +68,7 @@ class LinkWidget(forms.Widget):
 class RangeWidget(forms.MultiWidget):
     def __init__(self, attrs=None):
         widgets = (forms.TextInput(attrs=attrs), forms.TextInput(attrs=attrs))
+        #widgets = (adminwidgets.AdminSplitDateTime(attrs=attrs), adminwidgets.AdminSplitDateTime(attrs=attrs))
         super(RangeWidget, self).__init__(widgets, attrs)
 
     def decompress(self, value):
